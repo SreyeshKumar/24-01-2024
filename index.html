@@ -1,0 +1,415 @@
+<html>
+	<head>
+		<title>Chapter 11</title>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body style="padding: 15%;">
+		<hr style="border: 1px solid black"/>
+		<h2>Chapter 11. Using NetView Management Console Command Profiles</h2>
+		<div style="padding-left: 10%;">
+		<p>This chapter contains Programming Interface information.</p>
+		<p>When operators use the topology console, available commands are displayed in the context menu for a selected resource. Also, resource independent commands are shown in a context menu if you right-click the view background. Because
+operators have different areas of responsibility, levels of authority, and preferences, you might want to customize the command menus. Use the command profile editor batch-utility to control the content, order, and capabilities of these menus for an individual operator or group of operators.
+</p>
+			<p>The NetView management console provides a command profile editor batch-utility on both Windows and AIX or Linux platforms.</p>
+			</div>	
+		<hr style="border: 1px solid black"/>
+		<h3>Understanding Command Profiles</h3>
+		<div style="padding-left: 10%;">
+			<p>Command profiles contain the following objects:</p>
+			<ul style="list-style-type: square;">
+				<li>Resource managers</li>
+				<li>Commands and command sets</li>
+				<li>Profiles</li>
+				<li>Operators</li>
+			</ul>
+			</div>
+			<h3 style="padding-left: 5%;">Resource Manager Objects</h3>
+			<div style="padding-left: 10%">
+				<p>Resource manager objects represent applications that manage specific resources. The properties of a resource manager define a unique range of command indicators and specify the values in that range that are enabled for commands. You can use the command profile editor to add, change, or delete resource managers.</p>
+				<p>A command indicator is a numeric identifier assigned to a resource by its controlling resource manager. Each resource manager is assigned a unique range of values that it can define. Unless you are creating a resource management application or performing actions on behalf of such an application, you probably never need to alter the properties of a resource manager.</p>
+				<p><b>Note:</b> The first <i>32767</i> command indicators are available for customer use. Command indicators <i>32768</i> to <i>65534</i> are not defined and they are reserved for current and future Tivoli use. For a detailed description of these command indicators, see the <i>IBM Tivoli NetView for z/OS Data Model Reference</i>.</p>
+				
+			</div>
+			<h3>Commands and Command Set Objects</h3>
+			<div  style="padding-left: 10%">
+				
+				<p>Command objects represent menu items that can be displayed in the context menus for selected resources. Command set objects also represent menu items, but command set items have submenus of commands or other command sets associated with them. The command set object specifies the order and content of the submenu. You can use the command profile editor to add, change, and delete commands and command sets.</p>
+				<p>Commands consist of the following items:</p>
+				<ul style="list-style-type: square;" >
+					<li>A command definition page that defines the purpose and behavior of the command</li>
+					<li>One or more implementation pages that describe the command exits that are responsible for carrying out the command</li>
+					
+				</ul>
+				<p>Command sets are composed of one or more commands or command sets. </p>
+				<p>Many commands have a common meaning for a wide variety of resource types.
+However, the mechanics of carrying out this command can vary from one resource type to another.
+</p>
+				<p>For example, a Lotus Notes resource is started differently than a NetView resource, which is activated differently than a Tivoli Enterprise Console resource. This is because a variety of syntaxes and command exits are used; therefore command objects are composed of multiple implementation pages. When a command is issued, a single page is selected (based on the command indicator of the target resource).</p>
+				<p>For example, you can create a <i>Stop</i> Tasks command that is enabled for Lotus Notes resources, but not for Tivoli Enterprise Console resources. You can do this by defining a command called <i>Stop</i> Tasks and defining a page for Lotus Notes resources but not defining a page for Tivoli Enterprise Console resources.</p>
+			</div>
+			<h3>Profile Objects</h3>
+			<div style="padding-left: 10%;">
+				<p>Profile objects represent a collection of commands. Through the commands, command sets, and separators, the profile objects define the content and order of the items on the context menus. You can use the command profile editor to add, change, and delete command profiles.</p>
+				<p>A profile can be shared by multiple operators. An operator object is created for each operator who does not want to use the default profile. The operator object is then assigned a profile object. Changes to a profile affect all operators using that profile. This method makes it easier to maintain profiles and ensures that operators are using the same commands.</p>
+				<p>Note: A profile named default is used for all operators who do not have a specific operator definition. The default profile is appended by the topology server during initialization when processing component description files or business description files (CDF/BDF) of instrumented applications. This is done for the Topology Display Subsystem view.</p>
+			</div>
+			<h3>Operator Objects</h3>
+			<div style="padding-left: 10%;">
+				<p>An operator object represents a topology console operator and is associated with that operator by a common name. An operator object specifies the profile object assigned to the operator. You can use the command profile editor to add, change, or delete operators.</p>
+				<p>When an operator right-clicks a resource, the profile object used to populate the context menus for that operator is identified in the following ways:</p>
+				<ul style="list-style-type: square;">
+					<li>If an operator object exists with the same name, its specified profile object is used.</li>
+					<li>If an operator object does not exist with the same name, but a profile object with the name default exists, the profile object is used.</li>
+					<li>Otherwise, no commands from the command profile editor are displayed on the context menu.</li>
+				</ul>
+				<p><b>Note:</b> When you delete or rename the default profile, only operators with operator objects assigned to them have access to commands from the NetView management console. You can use this to provide security for a topology server.</p>
+			</div>
+			<hr style="border: 1px solid black"/>
+			<h3>Using the Command Profile Editor Batch Utility</h3>
+			<div style="padding-left: 10%;">
+				<p>You can use the command profile editor batch utility program to add, change, or delete commands in the command profile editor database. The batch utility runs on the Windows and AIX or Linux platforms that are supported by the topology server. The utility uses a text file (the response file), which contains responses to all the parameters used in creating commands.</p>
+				<p>The command profile editor batch utility can do the following things:</p>
+				<ul style="list-style-type: square">
+					<li>Create a response file from the information currently in the command profile editor database of the topology server. Note that the response file can be used as a backup for the command profile editor database or for synchronizing your topology servers.</li>
+					<li>Update the command profile editor database of the topology server from a response file.</li>
+					</ul>
+					<p>Any program can provide a response file and run the batch utility to add commands to the command profile editor database.</p>
+					<p>Two sample response files are provided with the command profile editor. These are available from the databases of the NetView management console topology server. The following samples are provided for customizing the commands:</p>
+				<p><b>ihsscpe</b></p>
+				<ul style="list-style-type: none;">
+					<li>Base commands that are shipped with the NetView management console topology server</li>
+					
+				</ul>
+				<p><b>flccpe</b> Commands for MultiSystem Manager (MSM) resources</p>
+				<p>These files are located in the following directories:</p>
+				<ul style="list-style-type: square;">
+					<li>ihsscpe, for Windows systems: %BINDIR%\TDS\server\sample\ihsscpe.xxx.rsp</li>
+					<li>ihsscpe, for AIX or Linux systems: $BINDIR/TDS/server/sample/ihsscpe.xxx.rsp</li>
+					<li>flccpe, for Windows systems: %BINDIR%\TDS\server\sample\flccpe.xxx.rsp</li>
+					<li>flccpe, for AIX or Linux systems: $BINDIR/TDS/server/sample/flccpe.xxx.rsp</li>
+				</ul>
+				<p><b>Note: </b>xxx is a country code indicator, such as en_US.</p>
+				<p>
+Depending on the parameters specified on the command line, the utility adds, modifies, or deletes commands. The command profile editor utility does not save information to the topology server until the entire response file is processed and verified. If the entire file cannot be processed successfully, no updates are made in the topology server database.
+</p>
+				</div>
+				<h3>Starting the Command Profile Batch Utility</h3>
+				<div style="padding-left: 10%;">
+					<p>To run the command profile editor batch utility, issue the cpebatch command from one of the following directories:</p>
+					<ul style="list-style-type: square;">
+						<li>For Windows systems: %BINDIR%\TDS\server\bin</li>
+						<li>For AIX or Linux systems: $BINDIR/TDS/server/bin</li>
+					</ul>
+				</div>
+		<h3>Input and Output Files of the Response File</h3>
+		<div style="padding-left: 10%;">
+			<p>The format for the input and output of the response file is identical. The response file is a standard ASCII file containing assignment statements that are generally in the form of keyword = value. The keyword is on the left side of the statement and identifies the parameter. The value is on the right side of the statement and either assigns a value to the keyword, or contains a block of keyword and value assignments.</p>
+			<p>Lines in which the first nonblank character is an asterisk (*) are comments and are ignored by the utility. Comments can be either inside a block or outside a block, for example:</p>
+			<img src="Screenshot%202024-01-24%20163356.png" style="width: 60vw;"/>
+			<p>The preceding example creates a manager named SNA and assigns it a range of command indicators from 5 to 10. It also creates three indicators for that manager, the lowest indicator defined is 5. For an example input file, see:</p>
+			<ul style="list-style-type: square;">
+				<li>For Windows systems: %BINDIR%\TDS\server\Sample\ihsscpe.xxx.rsp</li>
+				<li>For AIX or Linux systems: $BINDIR/TDS/server/Sample/ihsscpe.xxx.rsp</li>
+			</ul>
+			<p><b>Note: </b>XXX is a country code indicator, such as en_US.</p>
+			<p>The response file is processed in a single pass; therefore, the order of the main blocks of keywords is important. Use the following order:</p>
+			<ol>
+				<li>Manager</li>
+				<li>Command</li>
+				<li>Command_Set</li>
+				<li>Profile</li>
+				<li>Operator</li>
+			</ol>
+			<p>You cannot use items before they are defined in the response file. For example, if command set A embeds command set B, command set B must be defined first.</p>
+			<p>You can omit any block as long as all the required keywords are already defined in the topology server. For example, if you add a command and the resource manager is already defined in the topology server, it is not necessary to define the manager in the response file.</p>
+			<p>You can delete a block from the current database by placing the DELETE keyword inside the block.</p>
+			<p><b>Note: </b>Before deleting a command or command set, it must first be removed from any profiles or command sets that contain it. To do this, use the REMOVE_COMMAND or REMOVE_COMMAND_SET option of the MENU keyword for each profile or command set that contains the command or command set. </p>
+			<p>You can delete the following types of blocks:</p>
+			<ul>
+				<li>Manager</li>
+				<li>Command</li>
+				<li>Command_Set</li>
+				<li>Profile</li>
+				<li>Operator</li>
+			</ul>
+			<h3>Manager Keywords</h3>
+			<p>The manager block defines a manager and the command indicators that this manager controls. The keywords to define managers in command blocks are shown in Table 37.</p>
+			<p><i>Table 37. Manager command block keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>Name</td>
+					<td>Uniquely defines the manager to the command profile editor.</td>
+				</tr>
+				<tr>
+					<td>INDICATOR_HIGH</td>
+					<td>High end of the range of indicators controlled by this manager</td>
+				</tr>
+				<tr>
+					<td>INDICATOR_LOW</td>
+					<td>Low end of the range of indicators controlled by the manager.</td>
+				</tr>
+				<tr>
+					<td>INDICATOR_n</td>
+					<td>n must be the indicator value followed by the description string. The indicator value can be either a fixed number or can be relative to the INDICATOR_LOW+x, when x is the offset of this indicator from the low range.</td>
+				</tr>
+				<tr>
+					<td>COMMENT</td>
+					<td>Comment string. Limit of 256 characters.</td>
+				</tr>
+			</table>
+			
+			<h3>Command Keywords</h3>
+			<p>The command block defines a complete command, including general information and each of the command pages. The keywords used in command blocks are shown in Table 38.</p>
+			<p><i>Table 38. Command block keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>Name</td>
+					<td>Uniquely defines the manager to the command profile editor.</td>
+				</tr>
+				<tr>
+					<td>MENU_STRING</td>
+					<td>The string that is displayed on the context menu.</td>
+				</tr>
+				<tr>
+					<td>COMMENT</td>
+					<td>Comment string. Limit of 256 characters.</td>
+				</tr>
+				<tr>
+					<td>HTML_HELP_FILE</td>
+					<td>The name of the HTML file that contains the help for this command.</td>
+				</tr>
+				<tr>
+					<td>HTML_HELP_ANCHOR</td>
+					<td>The anchor, if applicable, to a particular location in the HTML file that contains the help for this command. The pound sign (#) in the first position is optional; when HTML is displayed by the NetView management console topology console, # is inserted, if necessary.</td>
+				</tr>
+				<tr>
+					<td>MIN_RESOURCES</td>
+					<td>Minimum number of resources that must be selected in a view before this command is enabled. The range is 1 to 10.</td>
+				</tr>
+			</table>
+			
+			<p><i>Table 38. Command block keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>MAX_RESOURCES</td>
+					<td>Maximum number of resources that can be selected in a view before this command is disabled. The range for this is value of the minimum resources–100, or an infinite number. An infinite number is denoted by the keyword INFINITY.
+Note: Specifying too many resources can cause system resources to become overburdened and, therefore cause the system to hang.
+</td>
+				</tr>
+				<tr>
+					<td>PAGE</td>
+					<td>Defines the characteristics of a page for an individual command. See “Page Keywords in the Command Block” for the items you can specify here.</td>
+				</tr>
+				<tr>
+					<td>RESOURCE_INDEP</td>
+					<td>YES or NO. Indicates whether this command is enabled regardless of whether resources are selected. If the value of RESOURCE_INDEP is YES, then MIN_RESOURCES and MAX_RESOURCES values are ignored.
+Resource dependent commands are displayed when you right-click a resource. Resource independent commands are displayed when you right-click the view background.
+</td>
+				</tr>
+				<tr>
+					<td>VERIFY</td>
+					<td>YES or NO. Indicates whether to issue a confirmation message before the command is sent to the manager.</td>
+				</tr>
+				
+			</table>
+			
+			<h3>Page Keywords in the Command Block</h3>
+			<p>The page keywords in the command block define the characteristics of a page for an individual command. The keywords to define pages in command blocks are shown in Table 39.</p>
+			<p><i>Table 39. Page command block keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>CLIENT_PLATFORM_LIST</td>
+					<td>The topology console platform or platforms associated with this command page.Use the following syntax for all platforms:
+CLIENT_PLATFORM_LIST = GENERIC
+</td>
+				</tr>
+				<tr>
+					<td>TARGET_PLATFORM_LIST</td>
+					<td>The target platform or platforms where the selected
+	resource is located. Use the following syntax for all
+	platforms:
+	TARGET_PLATFORM_LIST = GENERIC
+</td>
+				</tr>
+				<tr>
+					<td>MANAGER_NAME</td>
+					<td>The name of the manager to which the page applies. This must be previously defined in the response file. If this command is not associated with particular resource types, specify the string ANY. An ANY manager command can have only one command page, which can not specify an INDICATOR_LIST or PAGE_ID.</td>
+				</tr>
+				<tr>
+					<td>PAGE_ID</td>
+					<td>Uniquely identifies this command page by specifying one indicator from the indicator list. When updating a command page, the PAGE_ID must be in the indicator list of the existing page in CPE.</td>
+				</tr>
+				<tr>
+					<td>INDICATOR_LIST</td>
+					<td>INDICATOR_LIST	Defines the indicators that call this page. Specify single indicators by separating each with a comma. Specify a range by connecting numbers with a dash (for example, 1–100). You can replace real numbers with relative numbers using INDICATOR_LOW+x. INDICATOR_LOW denotes the lowest defined indicator for this manager.
+If the indicator list spans multiple lines, you can use the following format:
+INDICATOR_LIST = (
+VALUE.0 = INDICATOR_LOW + 0 VALUE.1 = INDICATOR_LOW + 1
+)
+</td>
+				</tr>
+				<tr>
+					<td>COMMAND_LIST</td>
+					<td>The command string to be sent to the command exit specified by EXIT_NAME.</td>
+				</tr>
+				<tr>
+					<td>EXIT_NAME</td>
+					<td>The name of the command exit to call for this page. See “Using Topology Server Command Exits” on page 104 for information.</td>
+				</tr>
+				<tr>
+					<td>LU_NAME</td>
+					<td>Currently, this field is ignored by NetView management console. All exits are run on the topology server.</td>
+				</tr>
+				<tr>
+					<td>HTML_HELP_FILE</td>
+					<td>The name of the HTML file that contains the help for this command.</td>
+				</tr>
+				<tr>
+					<td>HTML_HELP_ANCHOR</td>
+					<td>The anchor, if applicable, to a particular location in the HTML file that contains the help for this command. The pound sign (#) in the first position is optional; when HTML is displayed by the topology console, # is inserted, if necessary.</td>
+				</tr>
+				
+				<tr>
+					<td>IP_RESOURCE</td>
+					<td>IP Resource commands are displayed In the NetView management console when a resource with an IP address is right-clicked. Valid values are YES or NO. The default value is NO.</td>
+				</tr>
+			</table>
+			
+			<h3>Command Set Keywords</h3>
+			<p>The command set block defines what a command set looks like. Order is important in the menu block. The keywords used in command set blocks are shown in
+Table 40.
+</p>
+			<p><i>Table 40. Command set block keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>NAME</td>
+					<td>Uniquely identifies the command set to the command profile editor.
+</td>
+				</tr>
+				<tr>
+					<td>COMMENT</td>
+					<td>Comment string. Limit of 256 characters.
+</td>
+				</tr>
+				<tr>
+					<td>MENU_STRING</td>
+					<td>The string that is displayed on the Context menu.</td>
+				</tr>
+				<tr>
+					<td>HTML_HELP_FILE</td>
+					<td>The name of the HTML file that contains the help for this command set. This file must be installed on the topology server.</td>
+				</tr>
+				<tr>
+					<td>HTML_HELP_ANCHOR</td>
+					<td>The anchor, if applicable, to a particular location in
+the HTML file that contains the help for this command. The pound sign (#) in the first position is optional; when HTML is displayed by the topology console, # is inserted, if not already there.
+
+</td>
+				</tr>
+				<tr>
+					<td>MENU</td>
+					<td>Defines the commands that this command set contains and their order. You can specify one or more of the following options:
+						<ul style="list-style-type: square;">
+							<li><b>COMMAND_NAME</b> - Specifies the name of a command to add.</li>
+							<li><b>COMMAND_SET_NAME</b> - Specifies the name of a command set to add.</li>
+							<li><b>SEPARATOR </b> - Specifies that a separator is to be placed on the menu.</li>
+							<li><b>REMOVE_COMMAND </b> - Specifies the name of a command to remove</li>
+							<li><b>REMOVE_COMMAND_SET  </b> - Specifies the name of a command set to remove.</li>
+							
+						</ul>
+					</td>
+				</tr>
+				
+			</table>
+			<p>To add a new command to a command set or profile, first identify the command set or the profile to which you want to add the command, then specify the command you want to add inside the MENU block. The new command must already be defined in the database or must have been defined earlier in the response file.</p>
+			<img style="width: 70vw" src="Screenshot%202024-01-24%20172813.png" />
+			<img style="width: 70vw" src="Screenshot%202024-01-24%20173004.png" />
+			
+			<h3>Profile Keywords</h3>
+			<p>The profile block defines individual profiles. Order is important in the menu block. The keywords used in the profile command block are shown in Table 41.
+</p>
+			<p><i>Table 41. Profile command block keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>NAME</td>
+					<td>Uniquely identifies the command set to the command profile editor.
+</td>
+				</tr>
+				<tr>
+					<td>COMMENT</td>
+					<td>Comment string. Limit of 256 characters.
+</td>
+				</tr>
+				
+				<tr>
+					<td>MENU</td>
+					<td>Defines the commands that this command set contains and their order. You can specify one or more of the following options:
+						<ul style="list-style-type: square;">
+							<li><b>COMMAND_NAME</b> - Specifies the name of a command to add.</li>
+							<li><b>COMMAND_SET_NAME</b> - Specifies the name of a command set to add.</li>
+							<li><b>SEPARATOR </b> - Specifies that a separator is to be placed on the menu.</li>
+							<li><b>REMOVE_COMMAND </b> - Specifies the name of a command to remove</li>
+							<li><b>REMOVE_COMMAND_SET  </b> - Specifies the name of a command set to remove.</li>
+							
+						</ul>
+					</td>
+				</tr>
+				
+			</table>
+			
+			<h3>Operator Keywords</h3>
+			<p>The profile block defines individual profiles. Order is important in the menu block. The keywords used in the profile command block are shown in Table 41.
+</p>
+			<p><i>Operator Keywords</i></p>
+			<table style="border: 1px solid black">
+				<tr>
+					<th>Keyword</th>
+					<th>Explanation</th>
+				</tr>
+				<tr>
+					<td>NAME</td>
+					<td>Uniquely identifies the command set to the command profile editor.
+</td>
+				</tr>
+				<tr>
+					<td>COMMENT</td>
+					<td>Comment string. Limit of 256 characters.
+</td>
+				</tr>
+				<tr>
+					<td>PROFILE_NAME</td>
+					<td>The name of the profile that this operator is to use.
+</td>
+				</tr>
+				
+				
+				
+			</table>
+		</div>
+	</body>
+</html>	
